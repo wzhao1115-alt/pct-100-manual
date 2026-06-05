@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>技术架构 - PCT-100 化工控制实训装置</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ======== 导航栏 ======== -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <span class="logo-icon">&#9881;</span>
+      <span>PCT-100</span>
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="菜单">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">产品说明书</a>
+      <a href="technical.html" class="active">技术架构</a>
+      <a href="tutorial.html">入门教程</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ======== Hero ======== -->
+<section class="hero" style="background: linear-gradient(135deg, #0a1929 0%, #1a237e 40%, #0d47a1 100%);">
+  <div class="hero-content">
+    <div class="hero-badge">ESP32-C3 嵌入式系统</div>
+    <h1>技术架构与模块设计</h1>
+    <p class="hero-subtitle">
+      深入了解 PCT-100 的软件架构、硬件抽象层、中断系统与非阻塞任务调度机制
+    </p>
+  </div>
+</section>
+
+<!-- ======== 软件架构总览 ======== -->
+<section class="section" id="architecture">
+  <div class="container">
+    <div class="section-header">
+      <h2>软件架构总览</h2>
+      <p>基于模块化分层设计，硬件驱动与业务逻辑完全解耦</p>
+    </div>
+
+    <div class="img-container">
+      <svg width="720" height="450" viewBox="0 0 720 450" xmlns="http://www.w3.org/2000/svg">
+        <filter id="s1"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.1"/></filter>
+        <!-- 应用层 -->
+        <rect x="20" y="10" width="680" height="60" rx="8" fill="#e8eaf6" stroke="#3949ab" stroke-width="1.5"/>
+        <text x="360" y="40" text-anchor="middle" fill="#1a237e" font-size="16" font-weight="700">应用层 — PCT-100.ino（主循环任务调度）</text>
+        <text x="360" y="58" text-anchor="middle" fill="#5c6bc0" font-size="12">setup() · loop() · 模式控制 · 事件消费</text>
+        <line x1="360" y1="70" x2="360" y2="90" stroke="#7986cb" stroke-width="1.5" marker-end="url(#arrowDown)"/>
+
+        <!-- 中间件层 -->
+        <rect x="20" y="95" width="680" height="110" rx="8" fill="#e0f2f1" stroke="#00838f" stroke-width="1.5"/>
+        <text x="360" y="122" text-anchor="middle" fill="#004d40" font-size="16" font-weight="700">中间件/功能模块层</text>
+
+        <rect x="40" y="135" width="150" height="55" rx="6" fill="#fff" filter="url(#s1)"/>
+        <text x="115" y="157" text-anchor="middle" fill="#0d47a1" font-size="13" font-weight="600">key.cpp/h</text>
+        <text x="115" y="175" text-anchor="middle" fill="#616161" font-size="10">按键消抖状态机</text>
+
+        <rect x="205" y="135" width="150" height="55" rx="6" fill="#fff" filter="url(#s1)"/>
+        <text x="280" y="157" text-anchor="middle" fill="#0d47a1" font-size="13" font-weight="600">exti.cpp/h</text>
+        <text x="280" y="175" text-anchor="middle" fill="#616161" font-size="10">外部中断 & ISR</text>
+
+        <rect x="370" y="135" width="150" height="55" rx="6" fill="#fff" filter="url(#s1)"/>
+        <text x="445" y="157" text-anchor="middle" fill="#0d47a1" font-size="13" font-weight="600">relay.cpp/h</text>
+        <text x="445" y="175" text-anchor="middle" fill="#616161" font-size="10">继电器输出控制</text>
+
+        <rect x="535" y="135" width="150" height="55" rx="6" fill="#fff" filter="url(#s1)"/>
+        <text x="610" y="157" text-anchor="middle" fill="#bdbdbd" font-size="13" font-weight="600">sensor.cpp/h</text>
+        <text x="610" y="175" text-anchor="middle" fill="#9e9e9e" font-size="10">温度 & 光敏采集</text>
+
+        <line x1="360" y1="205" x2="360" y2="225" stroke="#4db6ac" stroke-width="1.5" marker-end="url(#arrowDown)"/>
+
+        <!-- 驱动层 -->
+        <rect x="20" y="230" width="680" height="80" rx="8" fill="#fff3e0" stroke="#ff6f00" stroke-width="1.5"/>
+        <text x="360" y="258" text-anchor="middle" fill="#e65100" font-size="16" font-weight="700">硬件抽象层 (HAL) / 驱动层</text>
+
+        <rect x="80" y="270" width="130" height="30" rx="5" fill="#fff" filter="url(#s1)"/>
+        <text x="145" y="290" text-anchor="middle" fill="#333" font-size="11">GPIO / digitalWrite</text>
+
+        <rect x="230" y="270" width="130" height="30" rx="5" fill="#fff" filter="url(#s1)"/>
+        <text x="295" y="290" text-anchor="middle" fill="#333" font-size="11">ADC / analogRead</text>
+
+        <rect x="380" y="270" width="130" height="30" rx="5" fill="#fff" filter="url(#s1)"/>
+        <text x="445" y="290" text-anchor="middle" fill="#333" font-size="11">OneWire / DS18B20</text>
+
+        <rect x="530" y="270" width="130" height="30" rx="5" fill="#fff" filter="url(#s1)"/>
+        <text x="595" y="290" text-anchor="middle" fill="#333" font-size="11">attachInterrupt</text>
+
+        <line x1="360" y1="310" x2="360" y2="330" stroke="#ffab40" stroke-width="1.5" marker-end="url(#arrowDown)"/>
+
+        <!-- 硬件层 -->
+        <rect x="20" y="335" width="680" height="60" rx="8" fill="#efebe9" stroke="#6d4c41" stroke-width="1.5"/>
+        <text x="360" y="365" text-anchor="middle" fill="#3e2723" font-size="16" font-weight="700">硬件层 — PCT-100 实训板</text>
+        <text x="360" y="383" text-anchor="middle" fill="#8d6e63" font-size="12">ESP32-C3 · DS18B20 · 光敏电阻 · 继电器 · LED · 按键</text>
+
+        <!-- 箭头定义 -->
+        <defs>
+          <marker id="arrowDown" markerWidth="10" markerHeight="7" refX="5" refY="7" orient="auto">
+            <polygon points="0 0, 10 0, 5 7" fill="#999"/>
+          </marker>
+        </defs>
+      </svg>
+      <p class="img-caption">图 1：PCT-100 分层软件架构 — 应用层、中间件层、驱动层、硬件层逐级解耦</p>
+    </div>
+  </div>
+</section>
+
+<!-- ======== 核心模块详解 ======== -->
+<section class="section section-alt" id="modules">
+  <div class="container">
+    <div class="section-header">
+      <h2>核心模块详解</h2>
+      <p>每个模块的设计思路与关键实现细节</p>
+    </div>
+
+    <!-- key 模块 -->
+    <div class="card" style="margin-bottom:2rem;">
+      <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;">
+        <div class="card-icon blue" style="margin-bottom:0;">K</div>
+        <h3 style="margin:0;">key 模块 — 按键消抖状态机</h3>
+      </div>
+      <p>实现完整的非阻塞按键状态机，支持短按/长按事件识别。每次 <code>key_task()</code> 调用仅做少量判断，不包含任何阻塞操作。</p>
+      <div class="spec-table-wrap" style="margin-top:1rem;">
+        <table>
+          <thead><tr><th>函数</th><th>功能</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td><code>key_init()</code></td><td>初始化按键 GPIO</td><td>配置 INPUT_PULLDOWN，读取初始状态</td></tr>
+            <tr><td><code>key_start_debounce(id)</code></td><td>启动消抖定时器</td><td>使用 millis() 记录当前时间</td></tr>
+            <tr><td><code>key_task()</code></td><td>消抖状态机轮询</td><td>每轮 loop() 调用，检查消抖完成</td></tr>
+            <tr><td><code>key_get_event(id)</code></td><td>获取按键事件</td><td>返回 SHORT_PRESS / LONG_PRESS / NONE</td></tr>
+            <tr><td><code>key_scan(id)</code></td><td>兼容旧接口</td><td>内部调用 key_task()，返回 PRESSED/RELEASED</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="code-block">
+        <span class="code-lang">C++</span>
+        <pre><code>// 非阻塞消抖核心逻辑（简化版）
+void key_task(void) {
+    unsigned long now = millis();
+    for (uint8_t i = 0; i &lt; KEY_COUNT; i++) {
+        <em>// 检测引脚变化，启动消抖</em>
+        if (key_stable_state[i] == KEY_RELEASED &amp;&amp; digitalRead(key_pins[i]) == HIGH)
+            key_start_debounce(i);
+
+        <em>// 消抖时间到达，确认状态</em>
+        if (key_debounce_active[i] &amp;&amp; (now - key_debounce_start[i] &gt;= KEY_DEBOUNCE_MS)) {
+            key_debounce_active[i] = 0;
+            uint8_t current = (digitalRead(key_pins[i]) == HIGH) ? KEY_PRESSED : KEY_RELEASED;
+            if (current != key_stable_state[i]) {
+                key_stable_state[i] = current;
+                if (current == KEY_PRESSED) key_press_start[i] = now;
+                else key_event[i] = KEY_EVENT_SHORT_PRESS;  <em>// 松手时生成短按事件</em>
+            }
+        }
+        <em>// KEY2 长按检测（1.5s）</em>
+        if (i == KEY2_ID &amp;&amp; key_stable_state[i] == KEY_PRESSED)
+            if (now - key_press_start[i] &gt;= KEY2_LONG_PRESS_MS)
+                key_event[i] = KEY_EVENT_LONG_PRESS;
+    }
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- exti 模块 -->
+    <div class="card" style="margin-bottom:2rem;">
+      <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;">
+        <div class="card-icon teal" style="margin-bottom:0;">E</div>
+        <h3 style="margin:0;">exti 模块 — 外部中断管理</h3>
+      </div>
+      <p>管理按键的硬件中断绑定。ISR 使用 <code>IRAM_ATTR</code> 修饰放置在 IRAM 中，执行时间极短（仅设置一个 <code>volatile uint8_t</code> 标志位），确保中断响应延迟最小。</p>
+      <div class="code-block">
+        <span class="code-lang">C++</span>
+        <pre><code><em>// exti.h — 中断标志位声明</em>
+extern volatile uint8_t key1_int_flag;
+extern volatile uint8_t key2_int_flag;
+
+void exti_init(void);
+void IRAM_ATTR key1_isr(void);
+void IRAM_ATTR key2_isr(void);
+
+<em>// exti.cpp — ISR 实现（仅置标志位）</em>
+volatile uint8_t key1_int_flag = 0;
+volatile uint8_t key2_int_flag = 0;
+
+void exti_init(void) {
+    key_init();
+    attachInterrupt(digitalPinToInterrupt(KEY1_PIN), key1_isr, RISING);
+    attachInterrupt(digitalPinToInterrupt(KEY2_PIN), key2_isr, RISING);
+}
+
+void IRAM_ATTR key1_isr(void) { key1_int_flag = 1; }
+void IRAM_ATTR key2_isr(void) { key2_int_flag = 1; }</code></pre>
+      </div>
+      <div class="callout info">
+        <strong>设计原则：</strong>ISR 中禁止使用 <code>delay()</code>、<code>Serial.print()</code> 等阻塞或耗时操作。所有业务逻辑在 <code>loop()</code> 中通过查询标志位完成，这是嵌入式实时系统的核心编程规范。
+      </div>
+    </div>
+
+    <!-- relay 模块 -->
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;">
+        <div class="card-icon amber" style="margin-bottom:0;">R</div>
+        <h3 style="margin:0;">relay 模块 — 继电器输出管理</h3>
+      </div>
+      <p>提供灯泡和风扇两路独立输出控制，支持单独操作和位组合操作。使用宏定义将逻辑名称映射到物理引脚，方便硬件变更时快速适配。</p>
+      <div class="spec-table-wrap" style="margin-top:1rem;">
+        <table>
+          <thead><tr><th>函数</th><th>功能</th></tr></thead>
+          <tbody>
+            <tr><td><code>relay_init()</code></td><td>初始化两路继电器 GPIO 为 OUTPUT，默认断开</td></tr>
+            <tr><td><code>lamp_power_set(on)</code></td><td>单独控制灯泡（GPIO6）</td></tr>
+            <tr><td><code>fan_power_set(on)</code></td><td>单独控制风扇（GPIO7）</td></tr>
+            <tr><td><code>usb_power_set_state(state)</code></td><td>按位组合控制（bit0=灯泡, bit1=风扇，支持 00/01/10/11 四状态）</td></tr>
+            <tr><td><code>usb_power_get_state_bits()</code></td><td>读取当前继电器状态位</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== 主循环调度流程 ======== -->
+<section class="section" id="loop-diagram">
+  <div class="container">
+    <div class="section-header">
+      <h2>主循环任务调度</h2>
+      <p>loop() 中的任务调度策略 — 所有操作非阻塞、周期性轮询</p>
+    </div>
+
+    <div class="img-container">
+      <svg width="700" height="380" viewBox="0 0 700 380" xmlns="http://www.w3.org/2000/svg">
+        <filter id="s2"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.08"/></filter>
+        <defs>
+          <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#0d47a1"/>
+          </marker>
+        </defs>
+
+        <!-- loop入口 -->
+        <rect x="250" y="10" width="200" height="40" rx="20" fill="#1a237e" filter="url(#s2)"/>
+        <text x="350" y="36" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">loop() 入口</text>
+
+        <!-- 分支1: 中断标志检查 -->
+        <line x1="350" y1="50" x2="350" y2="75" stroke="#0d47a1" stroke-width="1.5" marker-end="url(#arr)"/>
+        <rect x="210" y="80" width="280" height="40" rx="6" fill="#e3f2fd" stroke="#0d47a1" filter="url(#s2)"/>
+        <text x="350" y="105" text-anchor="middle" fill="#0d47a1" font-size="13" font-weight="600">检查 key_int_flag 并启动消抖</text>
+
+        <!-- 分支2: 按键任务 -->
+        <line x1="350" y1="120" x2="350" y2="145" stroke="#0d47a1" stroke-width="1.5" marker-end="url(#arr)"/>
+        <rect x="210" y="150" width="280" height="40" rx="6" fill="#e0f2f1" stroke="#00838f" filter="url(#s2)"/>
+        <text x="350" y="175" text-anchor="middle" fill="#004d40" font-size="13" font-weight="600">key_task() — 非阻塞消抖状态机</text>
+
+        <!-- 分支3: 传感器 -->
+        <line x1="350" y1="190" x2="350" y2="215" stroke="#0d47a1" stroke-width="1.5" marker-end="url(#arr)"/>
+        <rect x="210" y="220" width="280" height="40" rx="6" fill="#fff3e0" stroke="#ff6f00" filter="url(#s2)"/>
+        <text x="350" y="245" text-anchor="middle" fill="#e65100" font-size="13" font-weight="600">sensor_task() — 温度 & 光敏采集</text>
+
+        <!-- 分支4: 控制逻辑 -->
+        <line x1="350" y1="260" x2="350" y2="285" stroke="#0d47a1" stroke-width="1.5" marker-end="url(#arr)"/>
+        <rect x="180" y="290" width="340" height="55" rx="6" fill="#e8f5e9" stroke="#2e7d32" filter="url(#s2)"/>
+        <text x="350" y="313" text-anchor="middle" fill="#1b5e20" font-size="13" font-weight="600">自动模式：传感器阈值控制继电器</text>
+        <text x="350" y="333" text-anchor="middle" fill="#43a047" font-size="11">手动模式：消费按键事件切换继电器状态</text>
+
+        <!-- 循环箭头 -->
+        <line x1="180" y1="317" x2="80" y2="317" stroke="#999" stroke-width="1" stroke-dasharray="5,3"/>
+        <line x1="80" y1="317" x2="80" y2="35" stroke="#999" stroke-width="1" stroke-dasharray="5,3"/>
+        <line x1="80" y1="35" x2="250" y2="35" stroke="#999" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+        <text x="65" y="185" fill="#999" font-size="10" transform="rotate(-90,65,185)">循环执行</text>
+      </svg>
+      <p class="img-caption">图 2：主循环任务调度流程 — 每轮 loop() 依次执行中断标志检查、按键任务、传感器采集、控制逻辑，无阻塞</p>
+    </div>
+
+    <div class="callout success" style="margin-top:2rem;">
+      <strong>关键约束：</strong>所有周期性任务的总执行时间远小于 1ms，系统始终保持实时响应能力。即使按键消抖期间，传感器采集和继电器控制也不受影响。
+    </div>
+  </div>
+</section>
+
+<!-- ======== 系统状态表 ======== -->
+<section class="section section-alt" id="state-table">
+  <div class="container">
+    <div class="section-header">
+      <h2>系统状态与事件映射</h2>
+      <p>完整的状态转换关系与事件触发条件</p>
+    </div>
+
+    <div class="spec-table-wrap">
+      <table>
+        <thead>
+          <tr><th>事件</th><th>触发条件</th><th>自动模式</th><th>手动模式</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>KEY1 打开</td><td>KEY1 按下（上升沿中断）</td><td>允许系统运行</td><td>允许系统运行</td></tr>
+          <tr><td>KEY1 关闭</td><td>KEY1 松手</td><td>立即断开所有继电器</td><td>立即断开所有继电器</td></tr>
+          <tr><td>KEY2 短按</td><td>松手时稳定电平 &lt; 1500ms</td><td>无效</td><td>继电器状态循环 00→01→10→11→00</td></tr>
+          <tr><td>KEY2 长按</td><td>按键持续 &ge; 1500ms</td><td>切换至手动模式</td><td>切换至自动模式</td></tr>
+          <tr><td>温度 &ge; 30°C</td><td>sensor_task() 周期性检测</td><td>开启风扇</td><td>—</td></tr>
+          <tr><td>温度 &le; 28°C</td><td>sensor_task() 周期性检测</td><td>关闭风扇</td><td>—</td></tr>
+          <tr><td>ADC &ge; 1900</td><td>sensor_task() 周期性检测</td><td>开启灯泡</td><td>—</td></tr>
+          <tr><td>ADC &le; 1700</td><td>sensor_task() 周期性检测</td><td>关闭灯泡</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ======== 页脚 ======== -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <h4>PCT-100 化工控制实训装置</h4>
+      <p>基于 ESP32-C3 的工业级化工过程控制教学平台。适用于高等院校自动化、化工工程、嵌入式系统等专业的实训教学。</p>
+    </div>
+    <div>
+      <h4>快速链接</h4>
+      <ul>
+        <li><a href="index.html">产品说明书</a></li>
+        <li><a href="technical.html">技术架构</a></li>
+        <li><a href="tutorial.html">入门教程</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>技术栈</h4>
+      <ul>
+        <li>ESP32-C3 (RISC-V)</li>
+        <li>Arduino Core 3.3.8</li>
+        <li>DS18B20 / ADC</li>
+        <li>FreeRTOS</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2025 PCT-100 化工控制实训平台. 基于 ESP32-C3 嵌入式平台构建.</p>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
