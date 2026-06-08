@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PCT-100 化工控制实训装置 - 产品说明书</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ======== 导航栏 ======== -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <span class="logo-icon">&#9881;</span>
+      <span>PCT-100</span>
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="菜单">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html" class="active">产品说明书</a>
+      <a href="technical.html">技术架构</a>
+      <a href="tutorial.html">入门教程</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ======== Hero ======== -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">ESP32-C3 嵌入式控制平台</div>
+    <h1>PCT-100 化工控制实训装置</h1>
+    <p class="hero-subtitle">
+      基于 ESP32-C3 微控制器的工业级化工过程控制教学平台，集成温度采集、光照检测、继电器控制与双模式运行
+    </p>
+    <div class="hero-actions">
+      <a href="#overview" class="btn btn-primary">了解产品</a>
+      <a href="tutorial.html" class="btn btn-outline">快速入门</a>
+    </div>
+  </div>
+</section>
+
+<!-- ======== 产品概述 ======== -->
+<section class="section" id="overview">
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>产品概述</h2>
+      <p>PCT-100 是一款面向化工自动化教学的实训平台，帮助学员掌握嵌入式控制、传感器采集与过程自动化核心技能</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="card reveal-left" data-tilt>
+        <div class="card-icon blue">&#9881;</div>
+        <h3>双模式控制</h3>
+        <p>支持<strong>自动模式</strong>（传感器驱动）和<strong>手动模式</strong>（按键控制）两种运行方式，灵活适配不同教学场景</p>
+      </div>
+      <div class="card reveal-left" data-tilt>
+        <div class="card-icon teal">&#127777;</div>
+        <h3>温度采集与控制</h3>
+        <p>板载 DS18B20 数字温度传感器，精度 ±0.5°C，自动模式下根据温度阈值控制风扇启停</p>
+      </div>
+      <div class="card reveal-left" data-tilt>
+        <div class="card-icon amber">&#9728;</div>
+        <h3>光照检测</h3>
+        <p>光敏传感器 ADC 采集，自动模式下根据环境光照强度控制灯泡开关，支持阈值可配置</p>
+      </div>
+      <div class="card reveal-right" data-tilt>
+        <div class="card-icon green">&#9889;</div>
+        <h3>继电器输出</h3>
+        <p>两路独立继电器输出通道，分别控制灯泡和风扇，输出 HIGH 吸合、LOW 断开，支持位状态组合控制</p>
+      </div>
+      <div class="card reveal-right" data-tilt>
+        <div class="card-icon red">&#9992;</div>
+        <h3>非阻塞按键消抖</h3>
+        <p>基于 millis() 状态机的非阻塞消抖算法，中断服务函数极简设计，主循环不受按键处理阻塞</p>
+      </div>
+      <div class="card reveal-right" data-tilt>
+        <div class="card-icon blue">&#128268;</div>
+        <h3>ESP32-C3 主控</h3>
+        <p>搭载 RISC-V 32 位处理器，160MHz 主频，4MB Flash，支持 Wi-Fi 与 BLE 无线通信扩展</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== 硬件规格 ======== -->
+<section class="section section-alt" id="specs">
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>硬件规格</h2>
+      <p>PCT-100 实训板主要硬件参数一览</p>
+    </div>
+
+    <div class="spec-table-wrap reveal-scale">
+      <table>
+        <thead>
+          <tr><th>项目</th><th>参数</th><th>说明</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>主控芯片</strong></td><td>ESP32-C3</td><td>RISC-V 32 位，最高 160MHz</td></tr>
+          <tr><td><strong>Flash 存储</strong></td><td>4MB</td><td>程序存储与文件系统</td></tr>
+          <tr><td><strong>SRAM</strong></td><td>400KB</td><td>其中约 312KB 可供用户程序使用</td></tr>
+          <tr><td><strong>按键输入</strong></td><td>KEY1(GPIO20) / KEY2(GPIO21)</td><td>INPUT_PULLDOWN，下降沿/上升沿可配置</td></tr>
+          <tr><td><strong>温度传感器</strong></td><td>DS18B20 (GPIO10)</td><td>数字单总线，-55°C ~ +125°C，±0.5°C</td></tr>
+          <tr><td><strong>光敏传感器</strong></td><td>ADC (GPIO1)</td><td>模拟电压采集，用于环境光照检测</td></tr>
+          <tr><td><strong>继电器输出</strong></td><td>灯泡(GPIO6) / 风扇(GPIO7)</td><td>HIGH 吸合 / LOW 断开</td></tr>
+          <tr><td><strong>LED 指示</strong></td><td>WS2812</td><td>可编程 RGB LED</td></tr>
+          <tr><td><strong>通信接口</strong></td><td>USB-CDC / UART</td><td>串口 115200bps，支持 Wi-Fi / BLE 扩展</td></tr>
+          <tr><td><strong>开发环境</strong></td><td>Arduino IDE / PlatformIO</td><td>基于 Arduino ESP32 Core 3.3.8</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ======== 功能详解 ======== -->
+<section class="section" id="functions">
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>功能详解</h2>
+      <p>深入理解 PCT-100 的核心控制逻辑与运行机制</p>
+    </div>
+
+    <!-- 运行模式对比 -->
+    <h3 class="reveal" style="text-align:center;margin-bottom:1.5rem;">运行模式对比</h3>
+    <div class="modes-grid">
+      <div class="mode-card auto reveal-left">
+        <h3>&#127777; 自动模式（默认）</h3>
+        <p>系统上电后默认进入<strong>自动模式</strong>。KEY1 为总开关，打开后系统自动读取传感器数据：</p>
+        <ul style="list-style:disc;padding-left:1.5rem;margin:0.5rem 0;">
+          <li>温度 &ge; 30°C 开风扇，&le; 28°C 关风扇</li>
+          <li>光敏 ADC &ge; 1900 开灯泡，&le; 1700 关灯泡</li>
+          <li>KEY2 短按无效，长按 1500ms 切换至手动模式</li>
+        </ul>
+      </div>
+      <div class="mode-card manual reveal-right">
+        <h3>&#128295; 手动模式</h3>
+        <p>长按 KEY2 1500ms 从自动模式切入<strong>手动模式</strong>：</p>
+        <ul style="list-style:disc;padding-left:1.5rem;margin:0.5rem 0;">
+          <li>KEY2 短按切换灯泡/风扇状态</li>
+          <li>状态循环：00 &rarr; 01 &rarr; 10 &rarr; 11 &rarr; 00</li>
+          <li>第一位代表灯泡，第二位代表风扇</li>
+          <li>长按 KEY2 1500ms 切回自动模式</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 按键系统 -->
+    <h3 class="reveal" style="text-align:center;margin:2.5rem 0 1.5rem;">按键中断系统</h3>
+    <div class="img-container reveal-scale">
+      <svg width="720" height="280" viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrowBlue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#00d4ff"/>
+          </marker>
+          <filter id="shadow1"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.15"/></filter>
+        </defs>
+        <!-- 按键按下 -->
+        <rect x="30" y="100" width="100" height="50" rx="8" fill="#00d4ff" filter="url(#shadow1)"/>
+        <text x="80" y="130" fill="#000" text-anchor="middle" font-size="14" font-weight="600">按键按下</text>
+        <!-- 箭头 -->
+        <line x1="130" y1="125" x2="175" y2="125" stroke="#00d4ff" stroke-width="2" marker-end="url(#arrowBlue)"/>
+        <!-- 上升沿中断 -->
+        <rect x="180" y="100" width="130" height="50" rx="8" fill="#00838f" filter="url(#shadow1)"/>
+        <text x="245" y="125" fill="#fff" text-anchor="middle" font-size="13" font-weight="600">上升沿中断触发</text>
+        <line x1="310" y1="125" x2="355" y2="125" stroke="#00d4ff" stroke-width="2" marker-end="url(#arrowBlue)"/>
+        <!-- ISR -->
+        <rect x="360" y="100" width="140" height="50" rx="8" fill="#ff9100" filter="url(#shadow1)"/>
+        <text x="430" y="125" fill="#000" text-anchor="middle" font-size="13" font-weight="600">ISR 置标志位</text>
+        <line x1="500" y1="125" x2="545" y2="125" stroke="#00d4ff" stroke-width="2" marker-end="url(#arrowBlue)"/>
+        <!-- loop处理 -->
+        <rect x="550" y="100" width="130" height="50" rx="8" fill="#00e676" filter="url(#shadow1)"/>
+        <text x="615" y="125" fill="#000" text-anchor="middle" font-size="13" font-weight="600">loop() 处理</text>
+        <!-- 标注 -->
+        <text x="80" y="185" text-anchor="middle" fill="#9aa0b4" font-size="12">GPIO 电平跳变</text>
+        <text x="245" y="185" text-anchor="middle" fill="#9aa0b4" font-size="12">attachInterrupt(RISING)</text>
+        <text x="430" y="185" text-anchor="middle" fill="#9aa0b4" font-size="12">IRAM_ATTR 极简处理</text>
+        <text x="615" y="185" text-anchor="middle" fill="#9aa0b4" font-size="12">启动非阻塞消抖</text>
+      </svg>
+      <p class="img-caption">图 1：按键中断检测与处理流程 — 中断服务函数仅设置标志位，所有业务逻辑在 loop() 中完成</p>
+    </div>
+  </div>
+</section>
+
+<!-- ======== 技术亮点 ======== -->
+<section class="section section-alt" id="highlights">
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>技术亮点</h2>
+      <p>PCT-100 采用的嵌入式软件工程最佳实践</p>
+    </div>
+
+    <div class="img-container reveal-scale">
+      <svg width="700" height="320" viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg">
+        <filter id="shadow2"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.1"/></filter>
+        <!-- 状态机 -->
+        <rect x="20" y="40" width="200" height="240" rx="10" fill="rgba(0,212,255,0.06)" stroke="#00d4ff" stroke-width="1.5"/>
+        <text x="120" y="70" text-anchor="middle" fill="#00d4ff" font-size="15" font-weight="700">按键状态机</text>
+        <rect x="40" y="85" width="160" height="30" rx="5" fill="rgba(255,255,255,0.03)" stroke="rgba(0,212,255,0.2)"/>
+        <text x="120" y="105" text-anchor="middle" fill="#ccc" font-size="11">RELEASED（松键）</text>
+        <rect x="40" y="125" width="160" height="30" rx="5" fill="rgba(255,255,255,0.03)" stroke="rgba(0,212,255,0.2)"/>
+        <text x="120" y="145" text-anchor="middle" fill="#ccc" font-size="11">DEBOUNCE（消抖中）</text>
+        <rect x="40" y="165" width="160" height="30" rx="5" fill="rgba(0,212,255,0.12)" stroke="#00d4ff"/>
+        <text x="120" y="185" text-anchor="middle" fill="#00d4ff" font-size="11">PRESSED（确认按下）</text>
+        <rect x="40" y="205" width="160" height="30" rx="5" fill="rgba(0,230,118,0.08)" stroke="#00e676"/>
+        <text x="120" y="225" text-anchor="middle" fill="#00e676" font-size="11">EVENT（事件生成）</text>
+
+        <!-- 右侧说明 -->
+        <text x="260" y="80" fill="#fff" font-size="16" font-weight="700">非阻塞消抖原理</text>
+        <text x="260" y="108" fill="#9aa0b4" font-size="13">
+          <tspan x="260" dy="0">• millis() 记录消抖起始时刻</tspan>
+          <tspan x="260" dy="24">• 每次 loop() 检查是否达到 20ms</tspan>
+          <tspan x="260" dy="24">• 消抖期间不阻塞主循环</tspan>
+          <tspan x="260" dy="24">• 到达后读取 GPIO 确认稳定状态</tspan>
+          <tspan x="260" dy="24">• 状态变化时生成按键事件</tspan>
+        </text>
+
+        <!-- 代码示例 -->
+        <rect x="260" y="250" width="420" height="50" rx="6" fill="rgba(0,0,0,0.5)"/>
+        <text fill="#c9d1d9" font-size="11" font-family="Consolas,monospace">
+          <tspan x="275" y="272" fill="#ff7b72">if</tspan>
+          <tspan y="272" fill="#c9d1d9"> (millis() - debounce_start &gt;= KEY_DEBOUNCE_MS) {</tspan>
+          <tspan x="275" y="291" fill="#c9d1d9">  confirm_press();  </tspan>
+          <tspan y="291" fill="#8b949e">// 消抖完成，确认按键</tspan>
+          <tspan x="275" y="291" fill="#c9d1d9">}</tspan>
+        </text>
+      </svg>
+      <p class="img-caption">图 2：按键非阻塞消抖状态机设计</p>
+    </div>
+
+    <div class="features-grid" style="margin-top:2rem;">
+      <div class="card reveal-left" data-tilt>
+        <div class="card-icon green">&#10003;</div>
+        <h3>中断与主循环分离</h3>
+        <p>ISR 中仅 <code>flag = 1</code>，IRAM_ATTR 修饰确保快速响应，避免中断嵌套和优先级反转</p>
+      </div>
+      <div class="card reveal-left" data-tilt>
+        <div class="card-icon blue">&#128337;</div>
+        <h3>非阻塞任务调度</h3>
+        <p>所有周期性任务（按键扫描、传感器采集）均基于 <code>millis()</code> 时间比较，无 delay() 调用</p>
+      </div>
+      <div class="card reveal-right" data-tilt>
+        <div class="card-icon teal">&#128274;</div>
+        <h3>安全互锁设计</h3>
+        <p>KEY1 总开关关闭时硬件级切断继电器，防止自动/手动模式切换时的异常输出</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== 编译与程序信息 ======== -->
+<section class="section" id="build">
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>编译验证</h2>
+      <p>PCT-100 固件编译信息与资源占用</p>
+    </div>
+
+    <div class="spec-table-wrap reveal-scale">
+      <table>
+        <thead>
+          <tr><th>指标</th><th>数值</th><th>占比</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>程序存储空间</strong></td><td><span class="stat-number" data-target="310668">0</span> bytes</td><td>23% (共 1,310,720 bytes)</td></tr>
+          <tr><td><strong>动态内存</strong></td><td><span class="stat-number" data-target="14860">0</span> bytes</td><td>4% (共 327,680 bytes)</td></tr>
+          <tr><td><strong>可用本地变量空间</strong></td><td>312,820 bytes</td><td>—</td></tr>
+          <tr><td><strong>编译环境</strong></td><td colspan="2">Arduino ESP32 Core 3.3.8 / ESP32C3 Dev Module</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout success reveal">
+      <strong>编译通过</strong> — Sketch 资源占用极低，留有充足空间用于功能扩展（如 Wi-Fi 通信、数据记录等）。
+    </div>
+  </div>
+</section>
+
+<!-- ======== 页脚 ======== -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <h4>PCT-100 化工控制实训装置</h4>
+      <p>基于 ESP32-C3 的工业级化工过程控制教学平台。适用于高等院校自动化、化工工程、嵌入式系统等专业的实训教学。</p>
+    </div>
+    <div>
+      <h4>快速链接</h4>
+      <ul>
+        <li><a href="index.html">产品说明书</a></li>
+        <li><a href="technical.html">技术架构</a></li>
+        <li><a href="tutorial.html">入门教程</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>技术栈</h4>
+      <ul>
+        <li>ESP32-C3 (RISC-V)</li>
+        <li>Arduino Core 3.3.8</li>
+        <li>DS18B20 / ADC</li>
+        <li>FreeRTOS</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2025 PCT-100 化工控制实训平台. 基于 ESP32-C3 嵌入式平台构建.</p>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
